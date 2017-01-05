@@ -77,6 +77,8 @@ void construireTablouLive(tablou A,tablouLive &AUX)
 }
 void afisareTablouLive(tablouLive AUX)
 {
+    if(system("CLS"))
+        system("clear");
     cout<<"====================="<<endl<<endl;
     for(int i=1; i<=AUX.nrLinii; i++)
     {
@@ -110,7 +112,7 @@ int verificare(tablou A)
 {
     for(int i=1; i<=A.nrLinii; i++)
         for(int j=1; j<=A.nrColoane; j++)
-            if(A.valoare[i][j]>='0'&&A.valoare[i][j]<='8')
+            if(A.valoare[i][j]>='0'&&A.valoare[i][j]<='8' ||A.valoare[i][j]=='*')
                 return 1;
     return 0;
 }
@@ -138,7 +140,16 @@ void adaugareFlag(int x,int y,tablou &A,tablouLive &AUX)
     else
         cout<<'\a'<<"A fost atins numarul maxim de Flaguri!"<<endl;
 }
-
+int victorie(tablou A,tablouLive &AUX)
+{
+    if(AUX.nrFlaguri<AUX.nrMine)
+        return 0;
+    for(int i=1;i<=AUX.nrLinii;i++)
+        for(int j=1;j<=AUX.nrColoane;j++)
+            if(AUX.valoare[i][j]!=solutie.valoare[i][j])
+                return 0;
+    return 1;
+}
 void gameStart(tablou &A, tablouLive &AUX)
 {
     int x,y;
@@ -184,6 +195,13 @@ void gameStart(tablou &A, tablouLive &AUX)
             afisareTablouLive(AUX);
             cout<<"Am afisat tabloul auxiliar!"<<endl;
     }
+    if(gameOver==1)
+        cout<<"Ati pierdut!"<<endl;
+    else
+    if(victorie(A,AUX)==1)
+        cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
+
+
 }
 
 int main()
