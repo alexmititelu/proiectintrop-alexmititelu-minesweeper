@@ -47,8 +47,8 @@ void generareHarta(tablou &A)
 int nrMineVecine(int x,int y, tablou A)
 {
     int nr=0;
-    int v[]={-1,-1,0,1,1,1,0,-1},t[]={0,1,1,1,0,-1,-1,-1};
-    for(int i=0;i<=7;i++)
+    int v[]= {-1,-1,0,1,1,1,0,-1},t[]= {0,1,1,1,0,-1,-1,-1};
+    for(int i=0; i<=7; i++)
         if(A.valoare[x+v[i]][y+t[i]]=='*')
             nr++;
     return nr;
@@ -56,8 +56,8 @@ int nrMineVecine(int x,int y, tablou A)
 }
 void completareTablou(tablou &A)
 {
-    for(int i=1;i<=A.nrLinii;i++)
-        for(int j=1;j<=A.nrColoane;j++)
+    for(int i=1; i<=A.nrLinii; i++)
+        for(int j=1; j<=A.nrColoane; j++)
             if(A.valoare[i][j]!='*')
                 A.valoare[i][j]=nrMineVecine(i,j,A)+'0';
 }
@@ -83,7 +83,63 @@ void afisareTablouLive(tablouLive AUX)
     }
     cout<<endl<<"~~~~~~"<<"Flags:"<<AUX.nrFlaguri<<"/"<<AUX.nrMine<<endl;
 }
+int gameOver=0;
+void deschideCelula(int x,int y,tablou &A,tablouLive &AUX)
+{
+    if(A.valoare[x][y]=='*')
+        gameOver=1;
+    else if(A.valoare[x][y]=='0')
+    {
+        A.valoare[x][y]='M';
+        AUX.valoare[x][y]='0';
+        int v[]= {-1,-1,0,1,1,1,0,-1};
+        int t[]= {0,1,1,1,0,-1,-1,-1};
+        for(int i=0; i<=7; i++)
+            deschideCelula(x+v[i],y+t[i],A,AUX);
+    }
+    else if(A.valoare[x][y]!='*'&&A.valoare[x][y]!='M')
+    {
+        AUX.valoare[x][y]=A.valoare[x][y];
+        A.valoare[x][y]='M';
+    }
+}
+int verificare(tablou A)
+{
+    for(int i=1; i<=A.nrLinii; i++)
+        for(int j=1; j<=A.nrColoane; j++)
+            if(A.valoare[i][j]>='0'&&A.valoare[i][j]<='8')
+                return 1;
+    return 0;
+}
+void gameStart(tablou &A, tablouLive &AUX)
+{
+    int x,y;
+    while(gameOver!=1&&verificare(A)!=0)
+    {
+        cout<<"Ce celula doriti sa deschideti?"<<endl;
+        cout<<"x:";
+        cin>>x;
+        cout<<endl<<"y:";
+        cin>>y;
+        if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+            cout<<'\a'<<"Pozitii incorecte!";
+        else
+        {
+            deschideCelula(x,y,A,AUX);
+            cout<<endl;
+            for(int i=1; i<=A.nrLinii; i++)
+            {
+                for(int j=1; j<=A.nrColoane; j++)
+                    cout<<A.valoare[i][j]<<" ";
+                cout<<endl;
+            }
+            cout<<"Am afisat tabloul solutie"<<endl;
+            afisareTablouLive(AUX);
+            cout<<"Am afisat tabloul auxiliar!"<<endl;
 
+        }
+    }
+}
 
 int main()
 {
@@ -104,12 +160,14 @@ int main()
     construireTablouLive(test,Aux);
     afisareTablouLive(Aux);
     completareTablou(test);
-     for(int i=1; i<=test.nrLinii; i++)
+    for(int i=1; i<=test.nrLinii; i++)
     {
         for(int j=1; j<=test.nrColoane; j++)
             cout<<test.valoare[i][j]<<" ";
         cout<<endl;
     }
+    //cout<<endl<<endl<<endl<<"PPPPPPPPPPPPPP"<<endl;
+    gameStart(test,Aux);
 
 
 
