@@ -54,13 +54,16 @@ int nrMineVecine(int x,int y, tablou A)
     return nr;
 
 }
-void completareTablou(tablou &A)
+tablou solutie;
+void completareTablou(tablou &A,tablou &solutie)
 {
     for(int i=1; i<=A.nrLinii; i++)
         for(int j=1; j<=A.nrColoane; j++)
             if(A.valoare[i][j]!='*')
                 A.valoare[i][j]=nrMineVecine(i,j,A)+'0';
+    solutie=A;
 }
+
 void construireTablouLive(tablou A,tablouLive &AUX)
 {
     AUX.nrLinii=A.nrLinii;
@@ -111,6 +114,25 @@ int verificare(tablou A)
                 return 1;
     return 0;
 }
+
+void adaugareFlag(int x,int y,tablou &A,tablouLive &AUX)
+{
+    if(A.valoare[x][y]=='M')
+        cout<<'\a'<<"Celula a fost deja deschisa / marcata"<<endl;
+    else if(AUX.nrFlaguri<AUX.nrMine)
+    {
+        A.valoare[x][y]='M';
+        AUX.valoare[x][y]=244;
+        AUX.nrFlaguri++;
+    }
+    else
+        cout<<'\a'<<"A fost atins numarul maxim de Flaguri!"<<endl;
+}
+void eliminareFlag(int x,int y,tablou&A,tablouLive &AUX)
+{
+
+}
+
 void gameStart(tablou &A, tablouLive &AUX)
 {
     int x,y;
@@ -143,7 +165,7 @@ void gameStart(tablou &A, tablouLive &AUX)
 
 int main()
 {
-    tablou test;
+    tablou test,solutie;
     tablouLive Aux;
     test.nrLinii=9;
     test.nrColoane=9;
@@ -159,7 +181,7 @@ int main()
     cout<<"!!!!!!!!!!"<<endl;
     construireTablouLive(test,Aux);
     afisareTablouLive(Aux);
-    completareTablou(test);
+    completareTablou(test,solutie);
     for(int i=1; i<=test.nrLinii; i++)
     {
         for(int j=1; j<=test.nrColoane; j++)
