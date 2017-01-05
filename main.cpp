@@ -117,37 +117,62 @@ int verificare(tablou A)
 
 void adaugareFlag(int x,int y,tablou &A,tablouLive &AUX)
 {
-    if(A.valoare[x][y]=='M')
-        cout<<'\a'<<"Celula a fost deja deschisa / marcata"<<endl;
+    if(A.valoare[x][y]>='M'&&A.valoare[x][y]<='W')
+        {
+            if(AUX.valoare[x][y]!='P')
+             cout<<'\a'<<"Celula a fost deja deschisa si nu poate fi marcata cu un Flag!"<<endl;
+            else
+            {
+            A.valoare[x][y]=A.valoare[x][y]-'P'+'0';
+            AUX.valoare[x][y]='-';
+            AUX.nrFlaguri--;
+            }
+
+        }
     else if(AUX.nrFlaguri<AUX.nrMine)
     {
-        A.valoare[x][y]='M';
-        AUX.valoare[x][y]=244;
+        A.valoare[x][y]='P'+A.valoare[x][y]-'0';
+        AUX.valoare[x][y]='P';
         AUX.nrFlaguri++;
     }
     else
         cout<<'\a'<<"A fost atins numarul maxim de Flaguri!"<<endl;
 }
-void eliminareFlag(int x,int y,tablou&A,tablouLive &AUX)
-{
-
-}
 
 void gameStart(tablou &A, tablouLive &AUX)
 {
     int x,y;
+    char raspuns;
     while(gameOver!=1&&verificare(A)!=0)
     {
+        cout<<"Daca doriti sa deschideti o celula, apasati tasta 'D'"<<endl<<"Daca doriti sa marcati o celula cu un Flag, apasati tasta 'F'"<<endl;
+        cin>>raspuns;
+        if(raspuns=='D')
+        {
         cout<<"Ce celula doriti sa deschideti?"<<endl;
+        cout<<"x:";
+        cin>>x;
+        cout<<"y:";
+        cin>>y;
+        cout<<endl;
+        if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+            cout<<'\a'<<"Pozitii incorecte!";
+        else
+            deschideCelula(x,y,A,AUX);
+        }
+        else
+            if(raspuns=='F')
+        {
+             cout<<"Ce celula vreti sa fie marcata cu un Flag?"<<endl;
         cout<<"x:";
         cin>>x;
         cout<<endl<<"y:";
         cin>>y;
         if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
             cout<<'\a'<<"Pozitii incorecte!";
-        else
-        {
-            deschideCelula(x,y,A,AUX);
+            else
+                adaugareFlag(x,y,A,AUX);
+        }
             cout<<endl;
             for(int i=1; i<=A.nrLinii; i++)
             {
@@ -158,8 +183,6 @@ void gameStart(tablou &A, tablouLive &AUX)
             cout<<"Am afisat tabloul solutie"<<endl;
             afisareTablouLive(AUX);
             cout<<"Am afisat tabloul auxiliar!"<<endl;
-
-        }
     }
 }
 
