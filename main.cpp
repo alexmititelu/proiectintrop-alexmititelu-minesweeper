@@ -1,17 +1,23 @@
 #include <iostream>
 #include <stdlib.h>
 #include <time.h>
+#include <windows.h>
 using namespace std;
+int mesaj=-1;
 struct tablou
 {
     int nrLinii,nrColoane,nrMine;
     char valoare[100][100];
-};
+} solutie;
 struct tablouLive
 {
     int nrLinii,nrColoane,nrMine,nrFlaguri;
     char valoare[100][100];
 };
+struct coordonate
+{
+    int x[100],y[100];
+} mine;
 void creareTablou(tablou &A)
 {
     int i,j;
@@ -40,6 +46,8 @@ void generareHarta(tablou &A)
         if(A.valoare[x][y]=='0')
         {
             A.valoare[x][y]='*';
+            mine.x[i]=x;
+            mine.y[i]=y;
             i++;
         }
     }
@@ -54,14 +62,20 @@ int nrMineVecine(int x,int y, tablou A)
     return nr;
 
 }
-tablou solutie;
 void completareTablou(tablou &A,tablou &solutie)
 {
+    solutie.nrLinii=A.nrLinii;
+    solutie.nrColoane=A.nrColoane;
+    solutie.nrMine=A.nrMine;
     for(int i=1; i<=A.nrLinii; i++)
         for(int j=1; j<=A.nrColoane; j++)
             if(A.valoare[i][j]!='*')
-                A.valoare[i][j]=nrMineVecine(i,j,A)+'0';
-    solutie=A;
+                {
+                    A.valoare[i][j]=nrMineVecine(i,j,A)+'0';
+                    solutie.valoare[i][j]=A.valoare[i][j];
+                }
+                else
+                    solutie.valoare[i][j]='P';
 }
 
 void construireTablouLive(tablou A,tablouLive &AUX)
@@ -75,18 +89,33 @@ void construireTablouLive(tablou A,tablouLive &AUX)
             AUX.valoare[i][j]='-';
 
 }
+void afisareMesajLive(int mesaj)
+{
+    if(mesaj==0)
+        cout<<'\a'<<"Pozitii incorecte!"<<endl;
+    if(mesaj==1)
+    cout<<'\a'<<"Celula a fost deja deschisa si nu poate fi marcata cu un Flag!"<<endl;
+}
 void afisareTablouLive(tablouLive AUX)
 {
     if(system("CLS"))
         system("clear");
-    cout<<"====================="<<endl<<endl;
-    for(int i=1; i<=AUX.nrLinii; i++)
+    Sleep(0);
+    afisareMesajLive(mesaj);
+    for(int i=0; i<=AUX.nrLinii; i++)
     {
-        for(int j=1; j<=AUX.nrColoane; j++)
-            cout<<AUX.valoare[i][j];
-        cout<<endl;
+        for(int j=0; j<=AUX.nrColoane; j++)
+            if(i>0&&j>0)
+                cout<<AUX.valoare[i][j]<<" ";
+            else if(i==0&&j>0)
+                cout<<j<<" ";
+            else if(i==0&&j==0)
+                cout<<"  ";
+            else
+                cout<<i<<" ";
+        cout<<endl<<endl;
     }
-    cout<<endl<<"~~~~~~"<<"Flags:"<<AUX.nrFlaguri<<"/"<<AUX.nrMine<<endl;
+    cout<<endl<<"Flags:"<<AUX.nrFlaguri<<"/"<<AUX.nrMine<<endl<<endl;
 }
 int gameOver=0;
 void deschideCelula(int x,int y,tablou &A,tablouLive &AUX)
@@ -112,28 +141,33 @@ int verificare(tablou A)
 {
     for(int i=1; i<=A.nrLinii; i++)
         for(int j=1; j<=A.nrColoane; j++)
-            if(A.valoare[i][j]>='0'&&A.valoare[i][j]<='8' ||A.valoare[i][j]=='*')
+            if((A.valoare[i][j]>='0'&&A.valoare[i][j]<='8') ||A.valoare[i][j]=='*')
                 return 1;
     return 0;
 }
 
-void adaugareFlag(int x,int y,tablou &A,tablouLive &AUX)
+void adaugareFlag(int x,int y,tablou &A,tablouLive &AUX,int &mesaj)
 {
-    if(A.valoare[x][y]>='M'&&A.valoare[x][y]<='W')
+    if(A.valoare[x][y]>='M'&& A.valoare[x][y]<='X')
+    {
+        if(AUX.valoare[x][y]!='P')
+            mesaj=1;
+        if(AUX.valoare[x][y]=='P')
         {
-            if(AUX.valoare[x][y]!='P')
-             cout<<'\a'<<"Celula a fost deja deschisa si nu poate fi marcata cu un Flag!"<<endl;
-            else
-            {
+            if(A.valoare[x][y]!='X')
             A.valoare[x][y]=A.valoare[x][y]-'P'+'0';
+            else
+                A.valoare[x][y]='*';
             AUX.valoare[x][y]='-';
             AUX.nrFlaguri--;
-            }
-
         }
+    }
     else if(AUX.nrFlaguri<AUX.nrMine)
     {
+        if(A.valoare[x][y]!='*')
         A.valoare[x][y]='P'+A.valoare[x][y]-'0';
+        else
+            A.valoare[x][y]='X';
         AUX.valoare[x][y]='P';
         AUX.nrFlaguri++;
     }
@@ -144,12 +178,45 @@ int victorie(tablou A,tablouLive &AUX)
 {
     if(AUX.nrFlaguri<AUX.nrMine)
         return 0;
-    for(int i=1;i<=AUX.nrLinii;i++)
-        for(int j=1;j<=AUX.nrColoane;j++)
-            if(AUX.valoare[i][j]!=solutie.valoare[i][j])
+    for(int i=1; i<=AUX.nrLinii; i++)
+        for(int j=1; j<=AUX.nrColoane; j++)
+            if(AUX.valoare[i][j]!='P'&&AUX.valoare[i][j]!=solutie.valoare[i][j])
+                return 0;
+            else if(AUX.valoare[i][j]=='P' && solutie.valoare[i][j]!='*')
                 return 0;
     return 1;
 }
+void afisareMine(tablouLive &AUX)
+{
+    /*for(int i=1; i<=AUX.nrLinii; i++)
+        for(int j=1; j<=AUX.nrColoane; j++)
+            if(solutie.valoare[i][j]=='*' && AUX.valoare[i][j]=='P')
+                    AUX.valoare[i][j]='X';
+                else
+                    if(solutie.valoare[i][j]=='*')
+                    AUX.valoare[i][j]='*';
+                    */
+    /*for(int i=1; i<=AUX.nrLinii; i++)
+        cout<<mine.x[i]<<" "<<mine.y[i]<<endl;*/
+    for(int i=1; i<=AUX.nrLinii; i++)
+        if(AUX.valoare[mine.x[i]][mine.y[i]]=='-')
+            AUX.valoare[mine.x[i]][mine.y[i]]='*';
+        else
+            AUX.valoare[mine.x[i]][mine.y[i]]='X';
+
+
+}
+/*void intrebareJucator()
+{
+    char raspuns;
+    cout<<"Doriti sa incepeti jocul?"<<endl<<"D / N";
+    cin>>raspuns;
+    if(raspuns=='D')
+    {
+
+    }
+
+}*/
 void gameStart(tablou &A, tablouLive &AUX)
 {
     int x,y;
@@ -160,52 +227,90 @@ void gameStart(tablou &A, tablouLive &AUX)
         cin>>raspuns;
         if(raspuns=='D')
         {
-        cout<<"Ce celula doriti sa deschideti?"<<endl;
-        cout<<"x:";
-        cin>>x;
-        cout<<"y:";
-        cin>>y;
-        cout<<endl;
-        if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
-            cout<<'\a'<<"Pozitii incorecte!";
-        else
-            deschideCelula(x,y,A,AUX);
-        }
-        else
-            if(raspuns=='F')
-        {
-             cout<<"Ce celula vreti sa fie marcata cu un Flag?"<<endl;
-        cout<<"x:";
-        cin>>x;
-        cout<<endl<<"y:";
-        cin>>y;
-        if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
-            cout<<'\a'<<"Pozitii incorecte!";
-            else
-                adaugareFlag(x,y,A,AUX);
-        }
+            cout<<"Ce celula doriti sa deschideti?"<<endl;
+            cout<<"x:";
+            cin>>x;
+            cout<<"y:";
+            cin>>y;
             cout<<endl;
-            for(int i=1; i<=A.nrLinii; i++)
-            {
-                for(int j=1; j<=A.nrColoane; j++)
-                    cout<<A.valoare[i][j]<<" ";
-                cout<<endl;
-            }
-            cout<<"Am afisat tabloul solutie"<<endl;
-            afisareTablouLive(AUX);
-            cout<<"Am afisat tabloul auxiliar!"<<endl;
+            if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+                mesaj=0;
+            else
+                if(A.valoare[x][y]=='*'||(A.valoare[x][y]>='0'&&A.valoare[x][y]<'9'))
+                deschideCelula(x,y,A,AUX);
+            else
+                cout<<"Celula a fost deja deschisa!"<<endl;
+        }
+        else if(raspuns=='F')
+        {
+            cout<<"Ce celula vreti sa fie marcata cu un Flag?"<<endl;
+            cout<<"x:";
+            cin>>x;
+            cout<<endl<<"y:";
+            cin>>y;
+            if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+                cout<<'\a'<<"Pozitii incorecte!";
+            else
+                if(A.valoare[x][y]!='M')
+                adaugareFlag(x,y,A,AUX,mesaj);
+
+        }
+        cout<<endl;
+       /* for(int i=1; i<=A.nrLinii; i++)
+        {
+            for(int j=1; j<=A.nrColoane; j++)
+                cout<<A.valoare[i][j]<<" ";
+            cout<<endl;
+        }*/
+        afisareTablouLive(AUX);
     }
+
     if(gameOver==1)
+    {
+        if(system("CLS"))
+            system("clear");
+        afisareMine(AUX);
+        afisareTablouLive(AUX);
         cout<<"Ati pierdut!"<<endl;
-    else
+        /*for(int i=1; i<=solutie.nrLinii; i++)
+        {
+            for(int j=1; j<=solutie.nrColoane; j++)
+                cout<<solutie.valoare[i][j]<<" ";
+            cout<<endl;
+        }*/
+    }
     if(victorie(A,AUX)==1)
         cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
 
+        cout<<endl<<endl;
+        cout<<"Doriti sa jucati din nou?"<<endl;
+        cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'.";
+        cin>>raspuns;
+        if(raspuns=='D')
+            {
+                gameOver=0;
+                creareTablou(A);
+                generareHarta(A);
+                construireTablouLive(A,AUX);
+                completareTablou(A,solutie);
+                afisareTablouLive(AUX);
+                gameStart(A,AUX);
+            }
+
+             for(int i=1; i<=solutie.nrLinii; i++)
+        {
+            for(int j=1; j<=solutie.nrColoane; j++)
+                cout<<solutie.valoare[i][j]<<" ";
+            cout<<endl;
+        }
 
 }
 
 int main()
 {
+    //  intrebareJucator();
+    // tablou test;
+    // tablouLive Aux;
     tablou test,solutie;
     tablouLive Aux;
     test.nrLinii=9;
@@ -213,25 +318,32 @@ int main()
     test.nrMine=9;
     creareTablou(test);
     generareHarta(test);
-    for(int i=1; i<=test.nrLinii; i++)
-    {
-        for(int j=1; j<=test.nrColoane; j++)
-            cout<<test.valoare[i][j]<<" ";
-        cout<<endl;
-    }
-    cout<<"!!!!!!!!!!"<<endl;
+    /*solutie.nrLinii=test.nrLinii;
+    solutie.nrColoane=test.nrColoane;
+    for(int i=1;i<=solutie.nrLinii;i++)
+        for(int j=1;j<=solutie.nrColoane;j++)
+            solutie.valoare[i][j]=test.valoare[i][j];
+
+    */
+
+    /* for(int i=1; i<=test.nrLinii; i++)
+     {
+         for(int j=1; j<=test.nrColoane; j++)
+             cout<<test.valoare[i][j]<<" ";
+         cout<<endl;
+     }
+     cout<<"!!!!!!!!!!"<<endl;*/
     construireTablouLive(test,Aux);
     afisareTablouLive(Aux);
     completareTablou(test,solutie);
-    for(int i=1; i<=test.nrLinii; i++)
-    {
-        for(int j=1; j<=test.nrColoane; j++)
-            cout<<test.valoare[i][j]<<" ";
-        cout<<endl;
-    }
-    //cout<<endl<<endl<<endl<<"PPPPPPPPPPPPPP"<<endl;
     gameStart(test,Aux);
-
-
+    /*for(int i=1; i<=9; i++)
+        cout<<mine.x[i]<<" "<<mine.y[i]<<endl;*/
+         for(int i=1; i<=solutie.nrLinii; i++)
+        {
+            for(int j=1; j<=solutie.nrColoane; j++)
+                cout<<solutie.valoare[i][j]<<" ";
+            cout<<endl;
+        }
 
 }
