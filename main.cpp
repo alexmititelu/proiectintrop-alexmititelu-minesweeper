@@ -5,7 +5,7 @@
 #include <cstring>
 #include <ctype.h>
 using namespace std;
-int mesaj;
+int mesaj,gameOver=0,win=0;
 struct tablou
 {
     int nrLinii,nrColoane,nrMine;
@@ -130,7 +130,6 @@ void afisareTablouLive(tablouLive AUX)
     }
     cout<<endl<<"Flags:"<<AUX.nrFlaguri<<"/"<<AUX.nrMine<<endl<<endl;
 }
-int gameOver=0;
 void deschideCelula(int x,int y,tablou &A,tablouLive &AUX)
 {
     if(A.valoare[x][y]=='*')
@@ -293,7 +292,7 @@ void gameStart(tablou &A, tablouLive &AUX)
         afisareTablouLive(AUX);
     }
 }
-void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie)
+void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie,int &win)
 {
     char raspuns;
     if(gameOver==1)
@@ -305,7 +304,10 @@ void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie)
         cout<<"Ati pierdut!"<<endl;
     }
     if(victorie(A,AUX)==1)
-        cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
+        {
+            cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
+            win=1;
+        }
 
    /* cout<<endl<<endl;
     cout<<"Doriti sa jucati din nou?"<<endl;
@@ -364,13 +366,53 @@ void alegeDificultate(tablou &A)
     }
 
 }
+/*
+void afisareTimp(int nrSecunde)
+{
+    nrSecunde=nrSecunde/1000;
+    int nrOre=0;
+    int nrMinute=0;
+    if(nrSecunde>=60)
+    {
+        nrMinute=nrSecunde/60;
+        nrSecunde=nrSecunde%60;
+    }
+    if(nrMinute>=60)
+    {
+        nrOre=nrMinute/60;
+        nrMinute=nrMinute%60;
+    }
+    cout<<endl<<"Ai rezolvat puzzle-ul in ";
+    if(nrOre>0)
+    {
+        cout<<nrOre<<" ore";
+        if(nrMinute>0||nrSecunde>0)
+            cout<<", ";
+        else
+            cout<<".";
+    }
+    if(nrMinute>0)
+    {
+        cout<<nrMinute<<" minute";
+        if(nrSecunde>0)
+            cout<<", ";
+        else
+            cout<<".";
+    }
+    if(nrSecunde>0)
+        cout<<nrSecunde<<".";
+}
+*/
 void intrebareJucator()
 {
     char raspuns[100];
     cout<<"Doriti sa incepeti jocul?"<<endl<<"D / N"<<endl;
-    cin.getline(raspuns,100);
+    cin>>raspuns;
     if((raspuns[0]=='D' || raspuns[0]=='d')&&raspuns[1]==NULL)
     {
+        int nrSecunde=0;
+        clock_t this_time=clock();
+        clock_t last_time=this_time;
         tablou A;
         tablouLive AUX;
         alegeDificultate(A);
@@ -383,7 +425,16 @@ void intrebareJucator()
         afisareTablouLive(AUX);
         completareTablou(A,solutie);
         gameStart(A,AUX);
-        sfarsitJoc(A,AUX,solutie);
+        sfarsitJoc(A,AUX,solutie,win);
+        if(win==1)
+        {
+            this_time=clock();
+            nrSecunde=nrSecunde+(this_time-last_time);
+            //afisareTimp(nrSecunde);
+            cout<<endl<<"Ai rezolvat puzzle-ul in "<<nrSecunde/1000<<" secunde.";
+            win=0;
+        }
+
         /* cout<<"Solutia este............."<<endl;
          for(int i=1; i<=solutie.nrLinii; i++)
              {
