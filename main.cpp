@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <cstring>
 #include <ctype.h>
+#include <fstream>
 using namespace std;
 int mesaj,gameOver=0,win=0;
 struct tablou
@@ -236,10 +237,10 @@ void gameStart(tablou &A, tablouLive &AUX)
             cin>>coordY;
             cout<<endl;
             if(coordX[1]!=NULL || coordY[1]!=NULL)
-                    {
-                        valid=0;
-                        actualizareMesaj(mesaj,1);
-                    }
+            {
+                valid=0;
+                actualizareMesaj(mesaj,1);
+            }
             if(valid==1)
             {
                 strupr(coordX);
@@ -247,17 +248,17 @@ void gameStart(tablou &A, tablouLive &AUX)
                 x=coordX[0]-'A'+1;
                 y=coordY[0]-'A'+1;
                 if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
-                actualizareMesaj(mesaj,1);
-            else if(A.valoare[x][y]=='*'||(A.valoare[x][y]>='0'&&A.valoare[x][y]<'9'))
-                deschideCelula(x,y,A,AUX);
-            else
-                actualizareMesaj(mesaj,2);
+                    actualizareMesaj(mesaj,1);
+                else if(A.valoare[x][y]=='*'||(A.valoare[x][y]>='0'&&A.valoare[x][y]<'9'))
+                    deschideCelula(x,y,A,AUX);
+                else
+                    actualizareMesaj(mesaj,2);
             }
         }
         else if((raspuns[0]=='F'||raspuns[0]=='f')&&raspuns[1]==NULL)
         {
             cout<<"Ce celula vreti sa fie marcata cu un Flag?"<<endl;
-           cout<<"x:";
+            cout<<"x:";
             cin.get();
             cin>>coordX;
             cout<<"y:";
@@ -265,20 +266,20 @@ void gameStart(tablou &A, tablouLive &AUX)
             cin>>coordY;
             cout<<endl;
             if(coordX[1]!=NULL || coordY[1]!=NULL)
-                    {
-                        valid=0;
-                        actualizareMesaj(mesaj,1);
-                    }
+            {
+                valid=0;
+                actualizareMesaj(mesaj,1);
+            }
             if(valid==1)
             {
                 strupr(coordX);
                 strupr(coordY);
                 x=coordX[0]-'A'+1;
                 y=coordY[0]-'A'+1;
-            if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
-                actualizareMesaj(mesaj,1);
-            else
-                adaugareFlag(x,y,A,AUX);
+                if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+                    actualizareMesaj(mesaj,1);
+                else
+                    adaugareFlag(x,y,A,AUX);
             }
         }
         cout<<endl;
@@ -304,27 +305,27 @@ void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie,int &win)
         cout<<"Ati pierdut!"<<endl;
     }
     if(victorie(A,AUX)==1)
-        {
-            cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
-            win=1;
-        }
-
-   /* cout<<endl<<endl;
-    cout<<"Doriti sa jucati din nou?"<<endl;
-    cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
-    cin>>raspuns;
-    if(raspuns=='D')
     {
-        gameOver=0;
-        creareTablou(A);
-        generareHarta(A);
-        construireTablouLive(A,AUX);
-        completareTablou(A,solutie);
-        afisareTablouLive(AUX);
-        gameStart(A,AUX);
-
+        cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
+        win=1;
     }
-*/
+
+    /* cout<<endl<<endl;
+     cout<<"Doriti sa jucati din nou?"<<endl;
+     cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
+     cin>>raspuns;
+     if(raspuns=='D')
+     {
+         gameOver=0;
+         creareTablou(A);
+         generareHarta(A);
+         construireTablouLive(A,AUX);
+         completareTablou(A,solutie);
+         afisareTablouLive(AUX);
+         gameStart(A,AUX);
+
+     }
+    */
     /*       for(int i=1; i<=solutie.nrLinii; i++)
       {
           for(int j=1; j<=solutie.nrColoane; j++)
@@ -334,7 +335,7 @@ void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie,int &win)
       */
 
 }
-void alegeDificultate(tablou &A)
+void alegeDificultate(tablou &A,int &record)
 {
     char nivel[20];
     cout<<"Pentru a juca pe nivelul 'BEGINNER', apasa tasta '1'"<<endl;
@@ -343,28 +344,25 @@ void alegeDificultate(tablou &A)
     cin>>nivel;
     if(nivel[1]!=NULL || nivel[0]>'3' || nivel[0]<'1')
         A.nrMine=0;
-    else
-    if(nivel[0]=='1')
+    else if(nivel[0]=='1')
     {
         A.nrLinii=9;
         A.nrColoane=9;
         A.nrMine=10;
     }
-    else
-        if(nivel[0]=='2')
+    else if(nivel[0]=='2')
     {
         A.nrLinii=16;
         A.nrColoane=16;
         A.nrMine=40;
     }
-    else
-        if(nivel[0]=='3')
+    else if(nivel[0]=='3')
     {
         A.nrLinii=20;
         A.nrColoane=24;
         A.nrMine=99;
     }
-
+    record=nivel[0]-'0';
 }
 /*
 void afisareTimp(int nrSecunde)
@@ -403,6 +401,158 @@ void afisareTimp(int nrSecunde)
         cout<<nrSecunde<<".";
 }
 */
+void newRecord(int nrSecunde,int fisier)
+{
+    if(fisier==1)
+    {
+        ifstream fin("beginner.txt");
+        int secundeRecord;
+        fin>>secundeRecord;
+        if(nrSecunde<secundeRecord || secundeRecord==0)
+        {
+            fin.close();
+            ofstream fout("beginner.txt");
+            fout<<nrSecunde<<endl;
+            Sleep(500);
+            cout<<endl;
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<"."<<endl;
+            cout<<"Felicitari!! Ati stabilit un nou record pentru acest nivel!"<<endl;
+            cout<<endl<<"Care este numele dumneavoastra?"<<endl;
+            char numeNou[100];
+            cin.get();
+            cin.getline(numeNou,100);
+            fout<<numeNou;
+            fout.close();
+        }
+    }
+    else if(fisier==2)
+    {
+        ifstream fin("intermediate.txt");
+        int secundeRecord;
+        fin>>secundeRecord;
+        if(nrSecunde<secundeRecord || secundeRecord==0)
+        {
+            fin.close();
+            ofstream fout("intermediate.txt");
+            fout<<nrSecunde<<endl;
+            Sleep(500);
+            cout<<endl;
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<"."<<endl;
+            cout<<"Felicitari!! Ati stabilit un nou record pentru acest nivel!"<<endl;
+            cout<<endl<<"Care este numele dumneavoastra?"<<endl;
+            char numeNou[100];
+            cin.get();
+            cin.getline(numeNou,100);
+            fout<<numeNou;
+            fout.close();
+        }
+    }
+    else if(fisier==3)
+    {
+        ifstream fin("expert.txt");
+        int secundeRecord;
+        fin>>secundeRecord;
+        if(nrSecunde<secundeRecord || secundeRecord==0)
+        {
+            fin.close();
+            ofstream fout("expert.txt");
+            fout<<nrSecunde<<endl;
+            Sleep(500);
+            cout<<endl;
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<"."<<endl;
+            cout<<"Felicitari!! Ati stabilit un nou record pentru acest nivel!"<<endl;
+            cout<<endl<<"Care este numele dumneavoastra?"<<endl;
+            char numeNou[100];
+            cin.get();
+            cin.getline(numeNou,100);
+            fout<<numeNou;
+            fout.close();
+        }
+    }
+}
+void afisareRecord(int record)
+{
+    int nrSecunde;
+    char nume[100];
+    if(record==1)
+    {
+        ifstream fin("beginner.txt");
+        fin>>nrSecunde;
+        if(nrSecunde!=0)
+        {
+            fin.get();
+            fin.getline(nume,100);
+            cout<<endl<<"Pentru acest nivel (Beginner) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<". Puzzle-ul a fost rezolvat de";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(1000);
+            cout<<" "<<nume<<"."<<endl;
+            Sleep(2000);
+            fin.close();
+        }
+    }
+    else if(record==2)
+    {
+        ifstream fin("intermediate.txt");
+        fin>>nrSecunde;
+        if(nrSecunde!=0)
+        {
+            fin.get();
+            fin.getline(nume,100);
+            cout<<endl<<"Pentru acest nivel (Intermediate) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<". Puzzle-ul a fost rezolvat de";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(1000);
+            cout<<" "<<nume<<"."<<endl;
+            Sleep(2000);
+            fin.close();
+        }
+    }
+    else if(record==3)
+    {
+        ifstream fin("expert.txt");
+        fin>>nrSecunde;
+        if(nrSecunde!=0)
+        {
+            fin.get();
+            fin.getline(nume,100);
+            cout<<endl<<"Pentru acest nivel (Expert) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<". Puzzle-ul a fost rezolvat de";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(500);
+            cout<<".";
+            Sleep(1000);
+            cout<<" "<<nume<<"."<<endl;
+            Sleep(2000);
+            fin.close();
+        }
+    }
+}
 void intrebareJucator()
 {
     char raspuns[100];
@@ -410,18 +560,29 @@ void intrebareJucator()
     cin>>raspuns;
     if((raspuns[0]=='D' || raspuns[0]=='d')&&raspuns[1]==NULL)
     {
-        int nrSecunde=0;
+        int nrSecunde=0,record;
         clock_t this_time=clock();
         clock_t last_time=this_time;
         tablou A;
         tablouLive AUX;
-        alegeDificultate(A);
+        alegeDificultate(A,record);
         while(A.nrMine==0)
-            alegeDificultate(A);
+            alegeDificultate(A,record);
+        afisareRecord(record);
         creareTablou(A);
         generareHarta(A);
-
         construireTablouLive(A,AUX);
+        cout<<endl<<"Jocul va incepe in 7 secunde..."<<endl<<endl;
+        Sleep(2000);
+        cout<<endl<<"Jocul va incepe in 5 secunde..."<<endl<<endl;
+        Sleep(2000);
+        cout<<endl<<'\a'<<"Jocul va incepe in 3 secunde..."<<endl;
+        Sleep(1000);
+        cout<<endl<<'\a'<<"Jocul va incepe in 2 secunde..."<<endl;
+        Sleep(1000);
+        char smiley=1;
+        cout<<endl<<'\a'<<"Start joc! Mult succes!  "<<smiley<<endl<<endl;
+        Sleep(1000);
         afisareTablouLive(AUX);
         completareTablou(A,solutie);
         gameStart(A,AUX);
@@ -429,9 +590,16 @@ void intrebareJucator()
         if(win==1)
         {
             this_time=clock();
-            nrSecunde=nrSecunde+(this_time-last_time);
+            nrSecunde=(nrSecunde+(this_time-last_time))/1000;
             //afisareTimp(nrSecunde);
-            cout<<endl<<"Ai rezolvat puzzle-ul in "<<nrSecunde/1000<<" secunde.";
+            cout<<endl<<"Ai rezolvat puzzle-ul in "<<nrSecunde<<" secunde.";
+
+            if(A.nrMine==10)
+                newRecord(nrSecunde,1);
+            else if(A.nrMine==40)
+                newRecord(nrSecunde,2);
+            else if(A.nrMine==99)
+                newRecord(nrSecunde,3);
             win=0;
         }
 
@@ -445,31 +613,29 @@ void intrebareJucator()
              */
 
     }
+    else if((raspuns[0]=='N'||raspuns[0]=='n')&&raspuns[1]==NULL)
+        return;
     else
-        if((raspuns[0]=='N'||raspuns[0]=='n')&&raspuns[1]==NULL)
-            return;
-            else
-                intrebareJucator();
-            if(gameOver==1)
-    {
-       cout<<endl<<endl;
-    cout<<"Doriti sa jucati din nou?"<<endl;
-    cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
-    cin.get();
-    cin>>raspuns;
-    if((raspuns[0]=='D'||raspuns[0]=='d') && raspuns[1]==NULL)
-    {
-       /* gameOver=0;
-        creareTablou(A);
-        generareHarta(A);
-        construireTablouLive(A,AUX);
-        completareTablou(A,solutie);
-        afisareTablouLive(AUX);
-        gameStart(A,AUX);
-        */
-        gameOver=0;
         intrebareJucator();
-    }
+    if(gameOver==1)
+    {
+        cout<<endl<<endl;
+        cout<<"Doriti sa jucati din nou?"<<endl;
+        cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
+        cin>>raspuns;
+        if((raspuns[0]=='D'||raspuns[0]=='d') && raspuns[1]==NULL)
+        {
+            /* gameOver=0;
+             creareTablou(A);
+             generareHarta(A);
+             construireTablouLive(A,AUX);
+             completareTablou(A,solutie);
+             afisareTablouLive(AUX);
+             gameStart(A,AUX);
+             */
+            gameOver=0;
+            intrebareJucator();
+        }
     }
 
 
