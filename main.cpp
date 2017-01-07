@@ -199,16 +199,6 @@ int victorie(tablou A,tablouLive &AUX)
 }
 void afisareMine(tablouLive &AUX)
 {
-    /*for(int i=1; i<=AUX.nrLinii; i++)
-        for(int j=1; j<=AUX.nrColoane; j++)
-            if(solutie.valoare[i][j]=='*' && AUX.valoare[i][j]=='P')
-                    AUX.valoare[i][j]='X';
-                else
-                    if(solutie.valoare[i][j]=='*')
-                    AUX.valoare[i][j]='*';
-                    */
-    /*for(int i=1; i<=AUX.nrLinii; i++)
-        cout<<mine.x[i]<<" "<<mine.y[i]<<endl;*/
     for(int i=1; i<=AUX.nrMine; i++)
         if(AUX.valoare[mine.x[i]][mine.y[i]]=='-')
             AUX.valoare[mine.x[i]][mine.y[i]]='*';
@@ -282,14 +272,6 @@ void gameStart(tablou &A, tablouLive &AUX)
                     adaugareFlag(x,y,A,AUX);
             }
         }
-        cout<<endl;
-        /* for(int i=1; i<=A.nrLinii; i++)
-         {
-             for(int j=1; j<=A.nrColoane; j++)
-                 cout<<A.valoare[i][j]<<" ";
-             cout<<endl;
-         }
-         */
         afisareTablouLive(AUX);
     }
 }
@@ -309,31 +291,6 @@ void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie,int &win)
         cout<<"Felicitari!"<<endl<<"Ati castigat jocul!";
         win=1;
     }
-
-    /* cout<<endl<<endl;
-     cout<<"Doriti sa jucati din nou?"<<endl;
-     cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
-     cin>>raspuns;
-     if(raspuns=='D')
-     {
-         gameOver=0;
-         creareTablou(A);
-         generareHarta(A);
-         construireTablouLive(A,AUX);
-         completareTablou(A,solutie);
-         afisareTablouLive(AUX);
-         gameStart(A,AUX);
-
-     }
-    */
-    /*       for(int i=1; i<=solutie.nrLinii; i++)
-      {
-          for(int j=1; j<=solutie.nrColoane; j++)
-              cout<<solutie.valoare[i][j]<<" ";
-          cout<<endl;
-      }
-      */
-
 }
 void alegeDificultate(tablou &A,int &record)
 {
@@ -364,43 +321,6 @@ void alegeDificultate(tablou &A,int &record)
     }
     record=nivel[0]-'0';
 }
-/*
-void afisareTimp(int nrSecunde)
-{
-    nrSecunde=nrSecunde/1000;
-    int nrOre=0;
-    int nrMinute=0;
-    if(nrSecunde>=60)
-    {
-        nrMinute=nrSecunde/60;
-        nrSecunde=nrSecunde%60;
-    }
-    if(nrMinute>=60)
-    {
-        nrOre=nrMinute/60;
-        nrMinute=nrMinute%60;
-    }
-    cout<<endl<<"Ai rezolvat puzzle-ul in ";
-    if(nrOre>0)
-    {
-        cout<<nrOre<<" ore";
-        if(nrMinute>0||nrSecunde>0)
-            cout<<", ";
-        else
-            cout<<".";
-    }
-    if(nrMinute>0)
-    {
-        cout<<nrMinute<<" minute";
-        if(nrSecunde>0)
-            cout<<", ";
-        else
-            cout<<".";
-    }
-    if(nrSecunde>0)
-        cout<<nrSecunde<<".";
-}
-*/
 void newRecord(int nrSecunde,int fisier)
 {
     if(fisier==1)
@@ -591,7 +511,6 @@ void intrebareJucator()
         {
             this_time=clock();
             nrSecunde=(nrSecunde+(this_time-last_time))/1000;
-            //afisareTimp(nrSecunde);
             cout<<endl<<"Ai rezolvat puzzle-ul in "<<nrSecunde<<" secunde.";
 
             if(A.nrMine==10)
@@ -601,22 +520,14 @@ void intrebareJucator()
             else if(A.nrMine==99)
                 newRecord(nrSecunde,3);
             win=0;
+            gameOver=1;
         }
-
-        /* cout<<"Solutia este............."<<endl;
-         for(int i=1; i<=solutie.nrLinii; i++)
-             {
-                 for(int j=1; j<=solutie.nrColoane; j++)
-                     cout<<solutie.valoare[i][j]<<" ";
-                 cout<<endl;
-             }
-             */
-
     }
     else if((raspuns[0]=='N'||raspuns[0]=='n')&&raspuns[1]==NULL)
         return;
     else
         intrebareJucator();
+
     if(gameOver==1)
     {
         cout<<endl<<endl;
@@ -625,63 +536,13 @@ void intrebareJucator()
         cin>>raspuns;
         if((raspuns[0]=='D'||raspuns[0]=='d') && raspuns[1]==NULL)
         {
-            /* gameOver=0;
-             creareTablou(A);
-             generareHarta(A);
-             construireTablouLive(A,AUX);
-             completareTablou(A,solutie);
-             afisareTablouLive(AUX);
-             gameStart(A,AUX);
-             */
             gameOver=0;
             intrebareJucator();
         }
     }
-
-
-
 }
 
 int main()
 {
-    //  intrebareJucator();
-    // tablou test;
-    // tablouLive Aux;
-    /* tablou test,solutie;
-     tablouLive Aux;
-     test.nrLinii=9;
-     test.nrColoane=9;
-     test.nrMine=9;*/
-    //  creareTablou(test);
-    //  generareHarta(test);
-    /*solutie.nrLinii=test.nrLinii;
-    solutie.nrColoane=test.nrColoane;
-    for(int i=1;i<=solutie.nrLinii;i++)
-        for(int j=1;j<=solutie.nrColoane;j++)
-            solutie.valoare[i][j]=test.valoare[i][j];
-
-    */
-
-    /* for(int i=1; i<=test.nrLinii; i++)
-     {
-         for(int j=1; j<=test.nrColoane; j++)
-             cout<<test.valoare[i][j]<<" ";
-         cout<<endl;
-     }
-     cout<<"!!!!!!!!!!"<<endl;*/
-    // construireTablouLive(test,Aux);
-    // afisareTablouLive(Aux);
-    // completareTablou(test,solutie);
-    // gameStart(test,Aux);
-    /*for(int i=1; i<=9; i++)
-        cout<<mine.x[i]<<" "<<mine.y[i]<<endl;*/
-    /*    for(int i=1; i<=solutie.nrLinii; i++)
-       {
-           for(int j=1; j<=solutie.nrColoane; j++)
-               cout<<solutie.valoare[i][j]<<" ";
-           cout<<endl;
-       }
-       */
     intrebareJucator();
-
 }
