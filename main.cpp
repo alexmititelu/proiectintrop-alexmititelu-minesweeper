@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
+#include <cstring>
+#include <ctype.h>
 using namespace std;
 int mesaj;
 struct tablou
@@ -16,7 +18,7 @@ struct tablouLive
 };
 struct coordonate
 {
-    int x[100],y[100];
+    int x[101],y[101];
 } mine;
 void creareTablou(tablou &A)
 {
@@ -119,11 +121,11 @@ void afisareTablouLive(tablouLive AUX)
             if(i>0&&j>0)
                 cout<<AUX.valoare[i][j]<<" ";
             else if(i==0&&j>0)
-                cout<<j<<" ";
+                cout<<char('A'+j-1)<<" ";
             else if(i==0&&j==0)
                 cout<<"  ";
             else
-                cout<<i<<" ";
+                cout<<char('A'+i-1)<<" ";
         cout<<endl<<endl;
     }
     cout<<endl<<"Flags:"<<AUX.nrFlaguri<<"/"<<AUX.nrMine<<endl<<endl;
@@ -207,7 +209,7 @@ void afisareMine(tablouLive &AUX)
                     */
     /*for(int i=1; i<=AUX.nrLinii; i++)
         cout<<mine.x[i]<<" "<<mine.y[i]<<endl;*/
-    for(int i=1; i<=AUX.nrLinii; i++)
+    for(int i=1; i<=AUX.nrMine; i++)
         if(AUX.valoare[mine.x[i]][mine.y[i]]=='-')
             AUX.valoare[mine.x[i]][mine.y[i]]='*';
         else
@@ -217,39 +219,68 @@ void afisareMine(tablouLive &AUX)
 }
 void gameStart(tablou &A, tablouLive &AUX)
 {
-    int x,y;
-    char raspuns;
+    int x,y,valid;
+    char raspuns[20],coordX[20],coordY[20];
     while(gameOver!=1&&verificare(A)!=0)
     {
+        valid=1;
         cout<<"Daca doriti sa deschideti o celula, apasati tasta 'D'"<<endl<<"Daca doriti sa marcati o celula cu un Flag, apasati tasta 'F'"<<endl;
         cin>>raspuns;
-        if(raspuns=='D' || raspuns=='d')
+        if((raspuns[0]=='D' || raspuns[0]=='d')&&raspuns[1]==NULL)
         {
             cout<<"Ce celula doriti sa deschideti?"<<endl;
             cout<<"x:";
-            cin>>x;
+            cin.get();
+            cin>>coordX;
             cout<<"y:";
-            cin>>y;
+            cin.get();
+            cin>>coordY;
             cout<<endl;
-            if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
+            if(coordX[1]!=NULL || coordY[1]!=NULL)
+                    {
+                        valid=0;
+                        actualizareMesaj(mesaj,1);
+                    }
+            if(valid==1)
+            {
+                strupr(coordX);
+                strupr(coordY);
+                x=coordX[0]-'A'+1;
+                y=coordY[0]-'A'+1;
+                if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
                 actualizareMesaj(mesaj,1);
             else if(A.valoare[x][y]=='*'||(A.valoare[x][y]>='0'&&A.valoare[x][y]<'9'))
                 deschideCelula(x,y,A,AUX);
             else
                 actualizareMesaj(mesaj,2);
+            }
         }
-        else if(raspuns=='F'||raspuns=='f')
+        else if((raspuns[0]=='F'||raspuns[0]=='f')&&raspuns[1]==NULL)
         {
             cout<<"Ce celula vreti sa fie marcata cu un Flag?"<<endl;
-            cout<<"x:";
-            cin>>x;
-            cout<<endl<<"y:";
-            cin>>y;
+           cout<<"x:";
+            cin.get();
+            cin>>coordX;
+            cout<<"y:";
+            cin.get();
+            cin>>coordY;
+            cout<<endl;
+            if(coordX[1]!=NULL || coordY[1]!=NULL)
+                    {
+                        valid=0;
+                        actualizareMesaj(mesaj,1);
+                    }
+            if(valid==1)
+            {
+                strupr(coordX);
+                strupr(coordY);
+                x=coordX[0]-'A'+1;
+                y=coordY[0]-'A'+1;
             if(!(x>=1&&x<=A.nrLinii&&y>=1&&y<=A.nrColoane))
                 actualizareMesaj(mesaj,1);
             else
                 adaugareFlag(x,y,A,AUX);
-
+            }
         }
         cout<<endl;
         /* for(int i=1; i<=A.nrLinii; i++)
@@ -301,18 +332,50 @@ void sfarsitJoc(tablou A,tablouLive AUX,tablou solutie)
       */
 
 }
+void alegeDificultate(tablou &A)
+{
+    char nivel[20];
+    cout<<"Pentru a juca pe nivelul 'BEGINNER', apasa tasta '1'"<<endl;
+    cout<<"Pentru a juca pe nivelul 'INTERMEDIATE', apasa tasta '2'"<<endl;
+    cout<<"Pentru a juca pe nivelul 'EXPERT', apasa tasta '3'"<<endl;
+    cin>>nivel;
+    if(nivel[1]!=NULL || nivel[0]>'3' || nivel[0]<'1')
+        A.nrMine=0;
+    else
+    if(nivel[0]=='1')
+    {
+        A.nrLinii=9;
+        A.nrColoane=9;
+        A.nrMine=10;
+    }
+    else
+        if(nivel[0]=='2')
+    {
+        A.nrLinii=16;
+        A.nrColoane=16;
+        A.nrMine=40;
+    }
+    else
+        if(nivel[0]=='3')
+    {
+        A.nrLinii=20;
+        A.nrColoane=24;
+        A.nrMine=99;
+    }
+
+}
 void intrebareJucator()
 {
-    char raspuns;
+    char raspuns[100];
     cout<<"Doriti sa incepeti jocul?"<<endl<<"D / N"<<endl;
-    cin>>raspuns;
-    if(raspuns=='D' || raspuns=='d')
+    cin.getline(raspuns,100);
+    if((raspuns[0]=='D' || raspuns[0]=='d')&&raspuns[1]==NULL)
     {
         tablou A;
         tablouLive AUX;
-        A.nrLinii=9;
-        A.nrColoane=9;
-        A.nrMine=9;
+        alegeDificultate(A);
+        while(A.nrMine==0)
+            alegeDificultate(A);
         creareTablou(A);
         generareHarta(A);
 
@@ -332,13 +395,18 @@ void intrebareJucator()
 
     }
     else
-        if(raspuns=='N'||raspuns=='n')
+        if((raspuns[0]=='N'||raspuns[0]=='n')&&raspuns[1]==NULL)
             return;
-    cout<<endl<<endl;
+            else
+                intrebareJucator();
+            if(gameOver==1)
+    {
+       cout<<endl<<endl;
     cout<<"Doriti sa jucati din nou?"<<endl;
     cout<<"Daca da, apasati tasta 'D', altfel, apasati tasta 'N'."<<endl;
+    cin.get();
     cin>>raspuns;
-    if(raspuns=='D')
+    if((raspuns[0]=='D'||raspuns[0]=='d') && raspuns[1]==NULL)
     {
        /* gameOver=0;
         creareTablou(A);
@@ -350,6 +418,7 @@ void intrebareJucator()
         */
         gameOver=0;
         intrebareJucator();
+    }
     }
 
 
