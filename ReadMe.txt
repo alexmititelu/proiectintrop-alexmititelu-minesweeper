@@ -8,6 +8,8 @@ Odata ce jocul a inceput, jucatorul va primi la fiecare pas optiunea de a deschi
 
 Cand jocul a fost castigat / pierdut, daca jucatorul a doborat recordul de rezolvare al puzzleului atunci acestuia ii va fi solicitat faptul de a-si scrie numele pentru a-si asuma recordul.
 
+Cand recordul a fost doborat, un efect sonor va porni automat (record.wav).
+
 Recordurile vor fi memorate, pentru fiecare nivel de dificultate, intr-un fisier (nivel.txt), fiecare fisier fiind actualizat cand e cazul.
 
 Dupa ce s-a actualizat noul record (daca a fost cazul), jucatorul are optiunea de a juca un nou joc.
@@ -22,3 +24,4 @@ Programul contine:
 - expert.txt
 *fisierele txt de mai sus reprezinta recordul stabilit pentru fiecare nivel de dificultate
 - ReadMe.txt (informatii despre rularea programului)
+- record.wav (sunetul care se aude cand este batut un record)

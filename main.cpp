@@ -5,6 +5,7 @@
 #include <cstring>
 #include <ctype.h>
 #include <fstream>
+#include <mmsystem.h>
 using namespace std;
 int mesaj,gameOver=0,win=0,languageNr=0;
 struct tablou
@@ -667,7 +668,9 @@ void newRecordRo(int nrSecunde,int fisier)
             cout<<".";
             Sleep(500);
             cout<<"."<<endl;
-            cout<<"Felicitari!! Ati stabilit un nou record pentru acest nivel!"<<endl;
+            cout<<"Felicitari!!";
+            PlaySound(TEXT("record.wav"),NULL,SND_SYNC);
+            cout<<"Ati stabilit un nou record pentru acest nivel!"<<endl;
             cout<<endl<<"Care este numele dumneavoastra?"<<endl;
             char numeNou[100];
             cin.get();
@@ -828,7 +831,7 @@ void afisareRecordRo(int record)
         {
             fin.get();
             fin.getline(nume,100);
-            cout<<endl<<"Pentru acest nivel (Beginner) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<" secunde. Puzzle-ul a fost rezolvat de";
+            cout<<endl<<"Pentru acest nivel (Beginner) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<" secunde"<<endl<<"Puzzle-ul a fost rezolvat de";
             Sleep(500);
             cout<<".";
             Sleep(500);
@@ -849,7 +852,7 @@ void afisareRecordRo(int record)
         {
             fin.get();
             fin.getline(nume,100);
-            cout<<endl<<"Pentru acest nivel (Intermediate) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<" secunde. Puzzle-ul a fost rezolvat de";
+            cout<<endl<<"Pentru acest nivel (Intermediate) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<endl<<"de secunde. Puzzle-ul a fost rezolvat de";
             Sleep(500);
             cout<<".";
             Sleep(500);
@@ -870,7 +873,7 @@ void afisareRecordRo(int record)
         {
             fin.get();
             fin.getline(nume,100);
-            cout<<endl<<"Pentru acest nivel (Expert) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<" secunde. Puzzle-ul a fost rezolvat de";
+            cout<<endl<<"Pentru acest nivel (Expert) recordul rezolvarii puzzle-ului este de "<<nrSecunde<<" secunde."<<endl<<"Puzzle-ul a fost rezolvat de";
             Sleep(500);
             cout<<".";
             Sleep(500);
@@ -1070,11 +1073,11 @@ void intrebareJucatorRo()
         Sleep(2000);
         cout<<endl<<"Jocul va incepe in 5 secunde..."<<endl<<endl;
         Sleep(2000);
+        */
         cout<<endl<<'\a'<<"Jocul va incepe in 3 secunde..."<<endl;
         Sleep(1000);
         cout<<endl<<'\a'<<"Jocul va incepe in 2 secunde..."<<endl;
         Sleep(1000);
-        */
         char smiley=1;
         cout<<endl<<'\a'<<"Start joc! Mult succes!  "<<smiley<<endl<<endl;
         Sleep(1000);
@@ -1142,11 +1145,11 @@ void intrebareJucatorEn()
         Sleep(2000);
         cout<<endl<<"The game begins in 5 seconds..."<<endl<<endl;
         Sleep(2000);
+        */
         cout<<endl<<'\a'<<"The game begins in 3 seconds..."<<endl;
         Sleep(1000);
         cout<<endl<<'\a'<<"The game begins in 2 seconds..."<<endl;
         Sleep(1000);
-        */
         char smiley=1;
         cout<<endl<<'\a'<<"Start game! Good luck!  "<<smiley<<endl<<endl;
         Sleep(1000);
